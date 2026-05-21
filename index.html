@@ -1,0 +1,2083 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raven San Juan — Designer & Video Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CSS CUSTOM PROPERTIES
+    ============================================================ */
+    :root {
+      --ivory: #F5F2ED;
+      --ivory-dark: #EDE9E2;
+      --ink: #1A1714;
+      --ink-soft: #3D3830;
+      --dust: #9A9189;
+      --blush: #C8A99A;
+      --sage: #8EA58C;
+      --gold: #B8965A;
+      --white: #FDFCFA;
+      --ff-serif: 'Cormorant Garamond', Georgia, serif;
+      --ff-mono: 'DM Mono', monospace;
+      --ff-sans: 'DM Sans', sans-serif;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+      --section-pad: clamp(80px, 12vw, 140px);
+      --container: min(1180px, 92vw);
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: var(--ff-sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: var(--ink);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s var(--ease-out), height 0.3s var(--ease-out), background 0.3s;
+      mix-blend-mode: multiply;
+    }
+
+    .cursor-ring {
+      position: fixed;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--ink);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.35s var(--ease-out), height 0.35s var(--ease-out), opacity 0.3s, border-color 0.3s;
+      opacity: 0.4;
+    }
+
+    .cursor.hover {
+      width: 16px;
+      height: 16px;
+      background: var(--gold);
+    }
+
+    .cursor-ring.hover {
+      width: 56px;
+      height: 56px;
+      opacity: 0.15;
+      border-color: var(--gold);
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+    ::selection {
+      background: var(--ink);
+      color: var(--ivory);
+    }
+
+    /* ============================================================
+       TYPOGRAPHY HELPERS
+    ============================================================ */
+    .display {
+      font-family: var(--ff-serif);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    .label {
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--dust);
+    }
+
+    /* ============================================================
+       LAYOUT
+    ============================================================ */
+    .container {
+      width: var(--container);
+      margin-inline: auto;
+    }
+
+    section {
+      padding-block: var(--section-pad);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: clamp(48px, 7vw, 80px);
+    }
+
+    .section-header .label {
+      white-space: nowrap;
+    }
+
+    .section-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--ink-soft), transparent);
+      opacity: 0.15;
+    }
+
+    /* NOISE */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 900;
+      padding: 24px 0;
+      transition: padding 0.4s var(--ease-out), background 0.4s;
+    }
+
+    nav.scrolled {
+      padding: 16px 0;
+      background: rgba(245, 242, 237, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(26, 23, 20, 0.06);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-family: var(--ff-serif);
+      font-size: 1.25rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-logo span {
+      color: var(--gold);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      position: relative;
+      padding-bottom: 2px;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      transition: width 0.35s var(--ease-out);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: none;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: var(--ink);
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      background: var(--ivory);
+      z-index: 800;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+
+    .mobile-menu.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .mobile-menu a {
+      font-family: var(--ff-serif);
+      font-size: clamp(2rem, 7vw, 3.5rem);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+    }
+
+    /* ============================================================
+       HERO
+    ============================================================ */
+    #home {
+      min-height: 100svh;
+      padding-top: 100px;
+      padding-bottom: 60px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-inner {
+      width: var(--container);
+      margin-inline: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: clamp(40px, 6vw, 80px);
+    }
+
+    .hero-text {
+      padding-bottom: 0;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .hero-name {
+      font-size: clamp(3.2rem, 7vw, 6rem);
+      margin-bottom: 12px;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-tagline {
+      font-family: var(--ff-serif);
+      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--ink-soft);
+      margin-bottom: 48px;
+      max-width: 420px;
+      line-height: 1.5;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--ink);
+      color: var(--ivory);
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 16px 32px;
+      transition: background 0.3s, transform 0.3s var(--ease-out);
+    }
+
+    .btn-primary:hover {
+      background: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(26, 23, 20, 0.25);
+      color: var(--ink-soft);
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 16px 32px;
+      transition: border-color 0.3s, color 0.3s, transform 0.3s var(--ease-out);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+      transform: translateY(-2px);
+    }
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .hero-img-wrap {
+      position: relative;
+      width: min(420px, 90%);
+    }
+
+    .hero-img-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -12px -12px 12px 12px;
+      border: 1px solid rgba(184, 150, 90, 0.3);
+      z-index: 0;
+      transition: transform 0.5s var(--ease-out);
+    }
+
+    .hero-img-wrap:hover::before {
+      transform: translate(4px, -4px);
+    }
+
+    .hero-photo {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      object-position: center top;
+      position: relative;
+      z-index: 1;
+      filter: grayscale(10%);
+      transition: filter 0.5s;
+    }
+
+    .hero-img-wrap:hover .hero-photo {
+      filter: grayscale(0%);
+    }
+
+    .hero-index {
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      background: var(--ink);
+      color: var(--ivory);
+      padding: 16px 20px;
+      z-index: 2;
+    }
+
+    .hero-index .num {
+      font-family: var(--ff-serif);
+      font-size: 2rem;
+      font-weight: 300;
+      line-height: 1;
+      display: block;
+    }
+
+    .hero-index .txt {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245, 242, 237, 0.5);
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--dust);
+    }
+
+    .scroll-line {
+      width: 48px;
+      height: 1px;
+      background: var(--dust);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-line::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--gold);
+      animation: scrollLine 2s var(--ease-in-out) infinite;
+    }
+
+    @keyframes scrollLine {
+      0% {
+        left: -100%
+      }
+
+      50% {
+        left: 0
+      }
+
+      100% {
+        left: 100%
+      }
+    }
+
+    /* ============================================================
+       ABOUT
+    ============================================================ */
+    #about {
+      background: var(--white);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: clamp(40px, 6vw, 100px);
+      align-items: start;
+    }
+
+    .about-left {
+      position: sticky;
+      top: 120px;
+    }
+
+    .about-number {
+      font-family: var(--ff-serif);
+      font-size: clamp(5rem, 12vw, 9rem);
+      font-weight: 300;
+      line-height: 0.9;
+      color: var(--ivory-dark);
+      margin-bottom: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .about-bio h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 8px;
+    }
+
+    .about-bio .subtitle {
+      font-family: var(--ff-serif);
+      font-style: italic;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 32px;
+    }
+
+    .about-bio p {
+      color: var(--ink-soft);
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .about-philosophy {
+      margin: 40px 0;
+      padding: 32px;
+      background: var(--ivory);
+      border-left: 2px solid var(--gold);
+    }
+
+    .about-philosophy blockquote {
+      font-family: var(--ff-serif);
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.6;
+      color: var(--ink-soft);
+    }
+
+    .about-goals {
+      margin-top: 32px;
+    }
+
+    .about-goals h4 {
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dust);
+      margin-bottom: 16px;
+    }
+
+    .goals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .goals-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: var(--ink-soft);
+    }
+
+    .goals-list li::before {
+      content: '—';
+      color: var(--gold);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ============================================================
+       SKILLS
+    ============================================================ */
+    #skills {
+      background: var(--ivory);
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(26, 23, 20, 0.08);
+      border: 1px solid rgba(26, 23, 20, 0.08);
+    }
+
+    .skill-card {
+      background: var(--ivory);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .skill-card:hover {
+      background: var(--white);
+    }
+
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      width: 0;
+      background: var(--gold);
+      transition: width 0.5s var(--ease-out);
+    }
+
+    .skill-card:hover::before {
+      width: 100%;
+    }
+
+    .skill-icon {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .skill-name {
+      font-family: var(--ff-serif);
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .skill-level {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .skill-desc {
+      font-size: 0.85rem;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+
+    .skill-bar-wrap {
+      margin-top: 20px;
+      height: 2px;
+      background: rgba(26, 23, 20, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-bar {
+      height: 100%;
+      background: linear-gradient(to right, var(--gold), var(--blush));
+      width: 0;
+      transition: width 1.2s var(--ease-out);
+    }
+
+    /* ============================================================
+       PROJECTS
+    ============================================================ */
+    #projects {
+      background: var(--white);
+    }
+
+    .projects-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 60px;
+      border-bottom: 1px solid rgba(26, 23, 20, 0.1);
+    }
+
+    .tab-btn {
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      background: none;
+      border: none;
+      color: var(--dust);
+      cursor: none;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s var(--ease-out);
+    }
+
+    .tab-btn.active {
+      color: var(--ink);
+    }
+
+    .tab-btn.active::after {
+      transform: scaleX(1);
+    }
+
+    .tab-btn:hover {
+      color: var(--ink-soft);
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* Web projects */
+    .web-projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .project-card {
+      background: var(--ivory);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.4s var(--ease-out), box-shadow 0.4s;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(26, 23, 20, 0.08);
+    }
+
+    .project-thumb {
+      aspect-ratio: 16/10;
+      background: linear-gradient(135deg, var(--ivory-dark), #C8BFB2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease-out);
+    }
+
+    .project-card:hover .project-thumb img {
+      transform: scale(1.05);
+    }
+
+    .project-thumb-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    .project-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 23, 20, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .project-card:hover .project-overlay {
+      opacity: 1;
+    }
+
+    .overlay-btn {
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 12px 20px;
+      transition: background 0.3s;
+    }
+
+    .overlay-btn:hover {
+      background: var(--gold);
+    }
+
+    .personal-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(26, 23, 20, 0.65);
+      color: var(--ivory);
+      font-family: var(--ff-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    .project-info {
+      padding: 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-title {
+      font-family: var(--ff-serif);
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .project-desc {
+      font-size: 0.83rem;
+      color: var(--ink-soft);
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 16px;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid rgba(26, 23, 20, 0.15);
+      color: var(--dust);
+    }
+
+    /* Canva designs */
+    .canva-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .canva-card {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--ivory);
+      transition: transform 0.4s var(--ease-out), box-shadow 0.4s;
+    }
+
+    .canva-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(26, 23, 20, 0.1);
+    }
+
+    .canva-thumb {
+      aspect-ratio: 3/4;
+      overflow: hidden;
+      position: relative;
+      background: var(--ivory-dark);
+    }
+
+    .canva-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s var(--ease-out);
+      display: block;
+    }
+
+    .canva-card:hover .canva-thumb img {
+      transform: scale(1.04);
+    }
+
+    .canva-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(26, 23, 20, 0.6);
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.35s;
+    }
+
+    .canva-card:hover .canva-overlay {
+      opacity: 1;
+    }
+
+    .canva-overlay-tag {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(26, 23, 20, 0.7);
+      padding: 6px 12px;
+      backdrop-filter: blur(4px);
+    }
+
+    .canva-info {
+      padding: 18px 20px;
+    }
+
+    .canva-info h3 {
+      font-family: var(--ff-serif);
+      font-size: 1.05rem;
+      font-weight: 400;
+      margin-bottom: 5px;
+    }
+
+    .canva-info p {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      line-height: 1.55;
+    }
+
+    /* Video */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+
+    .video-card {
+      background: var(--ivory);
+      overflow: hidden;
+      transition: transform 0.4s var(--ease-out), box-shadow 0.4s;
+    }
+
+    .video-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(26, 23, 20, 0.08);
+    }
+
+    .video-thumb {
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #2A2520, #3D3830);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .video-thumb iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .video-thumb-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: rgba(245, 242, 237, 0.4);
+      cursor: none;
+    }
+
+    .play-btn {
+      width: 56px;
+      height: 56px;
+      border: 1px solid rgba(245, 242, 237, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .video-card:hover .play-btn {
+      border-color: var(--gold);
+      background: rgba(184, 150, 90, 0.15);
+    }
+
+    .play-btn svg {
+      fill: currentColor;
+      width: 18px;
+      margin-left: 3px;
+    }
+
+    .video-thumb-placeholder p {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .video-info {
+      padding: 24px;
+    }
+
+    .video-context {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .video-info h3 {
+      font-family: var(--ff-serif);
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .video-info p {
+      font-size: 0.83rem;
+      color: var(--ink-soft);
+      line-height: 1.65;
+    }
+
+    /* ============================================================
+       CONTACT  — info only, no form
+    ============================================================ */
+    #contact {
+      background: var(--ink);
+      color: var(--ivory);
+      padding-block: var(--section-pad);
+    }
+
+    #contact .section-header .label {
+      color: rgba(245, 242, 237, 0.35);
+    }
+
+    #contact .section-header::after {
+      background: linear-gradient(to right, rgba(245, 242, 237, 0.15), transparent);
+    }
+
+    .contact-centered {
+      max-width: 700px;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    .contact-centered h2 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      color: var(--ivory);
+      margin-bottom: 20px;
+    }
+
+    .contact-centered h2 em {
+      color: var(--gold);
+    }
+
+    .contact-centered>p {
+      font-size: 0.95rem;
+      color: rgba(245, 242, 237, 0.5);
+      line-height: 1.9;
+      margin-bottom: 60px;
+    }
+
+    .contact-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(245, 242, 237, 0.06);
+      border: 1px solid rgba(245, 242, 237, 0.06);
+      margin-bottom: 0;
+    }
+
+    .contact-card {
+      background: rgba(245, 242, 237, 0.03);
+      padding: 36px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold);
+      transition: width 0.5s var(--ease-out);
+    }
+
+    .contact-card:hover {
+      background: rgba(245, 242, 237, 0.06);
+    }
+
+    .contact-card:hover::before {
+      width: 100%;
+    }
+
+    .contact-card-icon {
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(245, 242, 237, 0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .contact-card-label {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(245, 242, 237, 0.3);
+    }
+
+    .contact-card-value {
+      font-family: var(--ff-serif);
+      font-size: 1rem;
+      color: rgba(245, 242, 237, 0.85);
+      word-break: break-all;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .contact-card-value a {
+      color: inherit;
+      transition: color 0.3s;
+    }
+
+    .contact-card-value a:hover {
+      color: var(--gold);
+    }
+
+    /* Resume button */
+    .resume-row {
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-resume {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: var(--ff-mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 18px 40px;
+      transition: background 0.3s, color 0.3s, transform 0.3s var(--ease-out);
+    }
+
+    .btn-resume:hover {
+      background: var(--gold);
+      color: var(--ink);
+      transform: translateY(-2px);
+    }
+
+    .btn-resume svg {
+      flex-shrink: 0;
+    }
+
+    .resume-hint {
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245, 242, 237, 0.2);
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: #0F0D0B;
+      color: rgba(245, 242, 237, 0.25);
+      padding: 32px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-inner p {
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .footer-inner p span {
+      color: var(--gold);
+    }
+
+    /* ============================================================
+       SCROLL REVEAL
+    ============================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .reveal-delay-1 {
+      transition-delay: 0.1s;
+    }
+
+    .reveal-delay-2 {
+      transition-delay: 0.2s;
+    }
+
+    .reveal-delay-3 {
+      transition-delay: 0.3s;
+    }
+
+    .reveal-delay-4 {
+      transition-delay: 0.4s;
+    }
+
+    .reveal-delay-5 {
+      transition-delay: 0.5s;
+    }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 900px) {
+      #home {
+        padding-top: 120px;
+        padding-bottom: 80px;
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        justify-content: flex-start;
+      }
+
+      .hero-img-wrap {
+        width: min(320px, 100%);
+      }
+
+      .scroll-hint {
+        display: none;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-left {
+        position: static;
+      }
+
+      .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .web-projects-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .canva-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .video-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .contact-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      :root {
+        --section-pad: 60px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .canva-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .projects-tabs {
+        overflow-x: auto;
+      }
+
+      .tab-btn {
+        white-space: nowrap;
+      }
+    }
+
+    /* ============================================================
+       PAGE LOADER
+    ============================================================ */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--ink);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      transition: opacity 0.7s var(--ease-out), visibility 0.7s;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .loader-name {
+      font-family: var(--ff-serif);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--ivory);
+      font-weight: 300;
+      letter-spacing: -0.02em;
+    }
+
+    .loader-name em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .loader-bar-wrap {
+      width: 200px;
+      height: 1px;
+      background: rgba(245, 242, 237, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .loader-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: var(--gold);
+      width: 0;
+      animation: loadBar 1.4s var(--ease-out) forwards;
+    }
+
+    @keyframes loadBar {
+      to {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Page Loader -->
+  <div id="loader">
+    <p class="loader-name">Raven <em>San Juan</em></p>
+    <div class="loader-bar-wrap">
+      <div class="loader-bar"></div>
+    </div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="container nav-inner">
+      <a href="#home" class="nav-logo">R<span>.</span>SJ</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home" class="mobile-link">Home</a>
+    <a href="#about" class="mobile-link">About</a>
+    <a href="#skills" class="mobile-link">Skills</a>
+    <a href="#projects" class="mobile-link">Projects</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+  </div>
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section id="home">
+    <div class="hero-inner">
+      <div class="hero-text" style="position:relative;">
+        <div class="hero-eyebrow reveal">
+          <span class="label">Portfolio 2025</span>
+        </div>
+        <h1 class="display hero-name reveal reveal-delay-1">
+          Hello, I'm<br><em>Raven.</em>
+        </h1>
+        <p class="hero-tagline reveal reveal-delay-2">
+          Designing minimal, elegant experiences — on screen, on canvas, and in motion.
+        </p>
+        <div class="hero-cta reveal reveal-delay-3">
+          <a href="#projects" class="btn-primary">
+            View My Work
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+            </svg>
+          </a>
+          <a href="#contact" class="btn-outline">Get In Touch</a>
+        </div>
+        <div class="scroll-hint reveal reveal-delay-4">
+          <div class="scroll-line"></div>
+          <span class="label">Scroll</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-img-wrap reveal reveal-delay-2">
+          <img src="assets/raven-photo.png" alt="Raven San Juan" class="hero-photo" />
+          <div class="hero-index">
+            <span class="num">2+</span>
+            <span class="txt">Years Experience</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ABOUT
+  ============================================================ -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="label">01 — About Me</span>
+      </div>
+      <div class="about-grid">
+        <div class="about-left reveal">
+          <div class="about-number">AB<br>OUT</div>
+        </div>
+        <div class="about-bio">
+          <h2 class="display reveal">Raven San Juan</h2>
+          <p class="subtitle reveal reveal-delay-1">IT Graduate · Full-Stack Developer · Visual Designer</p>
+          <p class="reveal reveal-delay-2">
+            Hi! I'm Raven, a 23-year-old IT graduate and creative professional based in the Philippines with 2 years of
+            hands-on experience building digital solutions that are clean, functional, and visually compelling. I thrive
+            at the intersection of development and design — where clean code meets thoughtful creativity.
+          </p>
+          <p class="reveal reveal-delay-3">
+            My work spans full-stack web development using PHP, Laravel, JavaScript, and C# .NET, as well as crafting
+            polished visual content through Canva. Whether I'm architecting a backend system or designing a brand
+            graphic, I bring the same attention to detail and commitment to quality to everything I create.
+          </p>
+          <div class="about-philosophy reveal reveal-delay-4">
+            <blockquote>
+              "Good design is invisible. It guides, delights, and communicates without ever getting in its own way."
+            </blockquote>
+          </div>
+          <div class="about-goals reveal reveal-delay-5">
+            <h4>Career Goals</h4>
+            <ul class="goals-list">
+              <li>Build a strong portfolio of real-world development and visual design projects</li>
+              <li>Collaborate with teams and clients to deliver impactful, well-crafted solutions</li>
+              <li>Grow into a versatile full-stack developer with a strong design sensibility</li>
+              <li>Develop expertise across both backend systems and front-facing creative work</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SKILLS
+  ============================================================ -->
+  <section id="skills">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="label">02 — Skills & Tools</span>
+      </div>
+      <div class="skills-grid">
+
+        <div class="skill-card reveal">
+          <span class="skill-icon">🌐</span>
+          <span class="skill-name">HTML5</span>
+          <span class="skill-level">Proficient</span>
+          <p class="skill-desc">Semantic, accessible markup that forms the backbone of every project — structured for
+            both humans and machines.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="85"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-1">
+          <span class="skill-icon">🎨</span>
+          <span class="skill-name">CSS3</span>
+          <span class="skill-level">Proficient</span>
+          <p class="skill-desc">Crafting responsive, pixel-perfect layouts with animations, custom properties, flexbox,
+            and grid.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="82"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-2">
+          <span class="skill-icon">⚡</span>
+          <span class="skill-name">JavaScript</span>
+          <span class="skill-level">Intermediate</span>
+          <p class="skill-desc">Adding interactivity, logic, and life to websites — from DOM manipulation to smooth UI
+            experiences.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="65"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <span class="skill-icon">🐘</span>
+          <span class="skill-name">PHP</span>
+          <span class="skill-level">Proficient</span>
+          <p class="skill-desc">Building dynamic server-side web applications and REST APIs with clean, maintainable
+            backend logic.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="78"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-1">
+          <span class="skill-icon">⬛</span>
+          <span class="skill-name">C# / .NET</span>
+          <span class="skill-level">Proficient</span>
+          <p class="skill-desc">Developing high-performance desktop applications and REST APIs using WPF, MVVM, and
+            ASP.NET Core.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="80"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-2">
+          <span class="skill-icon">🔴</span>
+          <span class="skill-name">Laravel</span>
+          <span class="skill-level">Intermediate</span>
+          <p class="skill-desc">Crafting structured web systems — ticketing platforms, CRUD apps, and workflow tools
+            using the Laravel framework.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="70"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <span class="skill-icon">🗄️</span>
+          <span class="skill-name">MySQL</span>
+          <span class="skill-level">Proficient</span>
+          <p class="skill-desc">Designing and optimizing relational databases — queries, stored procedures, and schema
+            for efficient data management.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="75"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-1">
+          <span class="skill-icon">🅱️</span>
+          <span class="skill-name">Bootstrap</span>
+          <span class="skill-level">Proficient</span>
+          <p class="skill-desc">Rapidly building responsive, mobile-first UI layouts with Bootstrap's grid system and
+            component library.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="82"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-2">
+          <span class="skill-icon">✦</span>
+          <span class="skill-name">Canva</span>
+          <span class="skill-level">Proficient</span>
+          <p class="skill-desc">Designing branded graphics, social media content, presentations, and marketing materials
+            with visual precision.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="90"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal">
+          <span class="skill-icon">💡</span>
+          <span class="skill-name">Visual Design</span>
+          <span class="skill-level">Core Skill</span>
+          <p class="skill-desc">Typography, color theory, layout composition, and visual hierarchy — the principles
+            behind every design decision.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="80"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-1">
+          <span class="skill-icon">🛠️</span>
+          <span class="skill-name">Technical Support</span>
+          <span class="skill-level">Experienced</span>
+          <p class="skill-desc">Providing hands-on IT troubleshooting for hardware, software, and networking issues
+            across organizations.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="85"></div>
+          </div>
+        </div>
+
+        <div class="skill-card reveal reveal-delay-2">
+          <span class="skill-icon">📋</span>
+          <span class="skill-name">Data Entry</span>
+          <span class="skill-level">Experienced</span>
+          <p class="skill-desc">Accurate and efficient data processing, record management, and documentation with high
+            attention to detail.</p>
+          <div class="skill-bar-wrap">
+            <div class="skill-bar" data-width="88"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROJECTS
+  ============================================================ -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="label">03 — Projects</span>
+      </div>
+      <div class="projects-tabs reveal">
+        <button class="tab-btn active" data-tab="web">Web Projects</button>
+        <button class="tab-btn" data-tab="canva">Canva Designs</button>
+      </div>
+
+      <!-- WEB PROJECTS -->
+      <div class="tab-panel active" id="tab-web">
+        <div class="web-projects-grid">
+          <div class="project-card reveal">
+            <div class="project-thumb">
+              <div class="project-thumb-placeholder">💌</div>
+              <span class="personal-badge">Personal Use</span>
+              <div class="project-overlay">
+                <a href="https://kemuelxraven.github.io/wedding-invitation/" target="_blank" class="overlay-btn">Live
+                  Demo ↗</a>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">Wedding Invitation</h3>
+              <p class="project-desc">A romantic, interactive digital wedding invitation with elegant animations, RSVP
+                functionality, and a memorable guest experience.</p>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span
+                  class="tag">JavaScript</span></div>
+            </div>
+          </div>
+          <div class="project-card reveal reveal-delay-1">
+            <div class="project-thumb">
+              <div class="project-thumb-placeholder">📊</div>
+              <span class="personal-badge">Personal Use</span>
+              <div class="project-overlay">
+                <a href="https://kemuelxraven.github.io/budget-tracker/" target="_blank" class="overlay-btn">Live Demo
+                  ↗</a>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">Budget Tracker</h3>
+              <p class="project-desc">A clean personal finance tracker for logging income and expenses, visualizing
+                spending habits, and staying on budget.</p>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span
+                  class="tag">JavaScript</span></div>
+            </div>
+          </div>
+          <div class="project-card reveal reveal-delay-2">
+            <div class="project-thumb">
+              <div class="project-thumb-placeholder">📅</div>
+              <span class="personal-badge">Personal Use</span>
+              <div class="project-overlay">
+                <a href="https://kemuelxraven.github.io/planner/" target="_blank" class="overlay-btn">Live Demo ↗</a>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">2026 Planner</h3>
+              <p class="project-desc">A digital annual planner with monthly calendar views, task lists, and goal
+                tracking — designed for mindful productivity.</p>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span
+                  class="tag">JavaScript</span></div>
+            </div>
+          </div>
+          <div class="project-card reveal reveal-delay-1">
+            <div class="project-thumb">
+              <div class="project-thumb-placeholder">🧠</div>
+              <span class="personal-badge">Personal Use</span>
+              <div class="project-overlay">
+                <a href="https://sanjuanraven15.github.io/memory-game/" target="_blank" class="overlay-btn">Live Demo
+                  ↗</a>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">Memory Game</h3>
+              <p class="project-desc">A card-matching memory game with flip animations, move counter, and timer — built
+                for fun and cognitive exercise.</p>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span
+                  class="tag">JavaScript</span></div>
+            </div>
+          </div>
+          <div class="project-card reveal reveal-delay-2">
+            <div class="project-thumb">
+              <div class="project-thumb-placeholder">👆</div>
+              <span class="personal-badge">Personal Use</span>
+              <div class="project-overlay">
+                <a href="https://kemuelxraven.github.io/tap-game/" target="_blank" class="overlay-btn">Live Demo ↗</a>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">Tap Game</h3>
+              <p class="project-desc">A reflex-based tapping game with score tracking and increasing difficulty — fast,
+                responsive, and addictively simple.</p>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">CSS</span><span
+                  class="tag">JavaScript</span></div>
+            </div>
+          </div>
+          <div class="project-card reveal reveal-delay-3">
+            <div class="project-thumb">
+              <div class="project-thumb-placeholder">📷</div>
+              <span class="personal-badge">Personal Use</span>
+              <div class="project-overlay">
+                <a href="https://sanjuanraven15.github.io/camera-test/" target="_blank" class="overlay-btn">Live Demo
+                  ↗</a>
+              </div>
+            </div>
+            <div class="project-info">
+              <h3 class="project-title">Camera Test</h3>
+              <p class="project-desc">A browser-based camera testing utility using the MediaDevices API — for checking
+                device camera functionality and permissions.</p>
+              <div class="project-tags"><span class="tag">HTML</span><span class="tag">JavaScript</span><span
+                  class="tag">Web API</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CANVA DESIGNS -->
+      <div class="tab-panel" id="tab-canva">
+        <div class="canva-grid">
+          <div class="canva-card reveal">
+            <div class="canva-thumb">
+              <img src="assets/canva-1-courage.png" alt="Embracing Courage & Perseverance poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Motivational Poster</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Courage & Perseverance</h3>
+              <p>A motivational poster combining bold typography, diamond shapes, and an inspiring Winston Churchill
+                quote.</p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-1">
+            <div class="canva-thumb">
+              <img src="assets/canva-2-corporate.png" alt="Corporate Design 2024 cover" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Corporate Brochure</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Corporate Design Cover</h3>
+              <p>A clean 2024 corporate brochure cover with diamond photo frames and a professional blue palette.</p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-2">
+            <div class="canva-thumb">
+              <img src="assets/canva-3-beyond.png" alt="Beyond Boundaries company profile" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Company Profile</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Beyond Boundaries</h3>
+              <p>A bold teal and dark gray company profile cover featuring a cityscape and strong editorial layout.</p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-1">
+            <div class="canva-thumb">
+              <img src="assets/canva-4-contractor.png" alt="Contractor construction flyer" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Business Flyer</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Construction Partner Flyer</h3>
+              <p>A warm brown-toned flyer for a construction company with vintage photo and strong call-to-action
+                typography.</p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-2">
+            <div class="canva-thumb">
+              <img src="assets/canva-5-productivity.png" alt="Boost your productivity infographic" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Infographic</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Productivity Strategies</h3>
+              <p>A structured navy and gold infographic with strategies for time-blocking, task prioritization, and
+                focused work.</p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-3">
+            <div class="canva-thumb">
+              <img src="assets/canva-6-laborday.png" alt="Happy Labor Day greeting card" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Holiday Greeting</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Happy Labor Day</h3>
+              <p>A clean architectural-themed Labor Day greeting card with layered glass, construction imagery, and
+                caution-tape accents.</p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-1">
+            <div class="canva-thumb">
+              <img src="assets/canva-7-boba.png" alt="Coffee Boba Brown Sugar product poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Product Poster</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Coffee Boba Product Launch</h3>
+              <p>A dynamic F&B product poster with floating boba pearls, coffee beans, and bold oversized type on amber.
+              </p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-2">
+            <div class="canva-thumb">
+              <img src="assets/canva-8-menu.png" alt="Special Menu restaurant flyer" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Restaurant Flyer</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Special Menu Flyer</h3>
+              <p>An energetic food menu flyer for chicken skewers with brush strokes, orange splashes, and bold
+                lettering.</p>
+            </div>
+          </div>
+          <div class="canva-card reveal reveal-delay-3">
+            <div class="canva-thumb">
+              <img src="assets/canva-9-sale.png" alt="BK Super Sale promotional poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Promo Poster</span></div>
+            </div>
+            <div class="canva-info">
+              <h3>Super Sale Promo Poster</h3>
+              <p>A striking navy and orange fashion sale poster with geometric shapes, bold headlines, and product
+                photography.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CONTACT — info cards only
+  ============================================================ -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="label">04 — Let's Connect</span>
+      </div>
+      <div class="contact-centered">
+        <h2 class="display reveal">Let's make<br>something <em>beautiful</em></h2>
+        <p class="reveal reveal-delay-1">
+          Open to freelance projects, collaborations, and creative opportunities.<br>
+          Whether you need a website, a visual design, or video content — reach out anytime.
+        </p>
+        <div class="contact-cards reveal reveal-delay-2">
+          <div class="contact-card">
+            <div class="contact-card-icon">✉</div>
+            <span class="contact-card-label">Email</span>
+            <span class="contact-card-value">
+              <a href="mailto:sanjuanraven915@gmail.com">sanjuanraven915@gmail.com</a>
+            </span>
+          </div>
+          <div class="contact-card">
+            <div class="contact-card-icon">📞</div>
+            <span class="contact-card-label">Phone</span>
+            <span class="contact-card-value">
+              <a href="tel:+639074981207">+63 907 498 1207</a>
+            </span>
+          </div>
+          <div class="contact-card">
+            <div class="contact-card-icon">📍</div>
+            <span class="contact-card-label">Location</span>
+            <span class="contact-card-value">Philippines</span>
+          </div>
+        </div>
+
+        <!-- Resume -->
+        <div class="resume-row reveal reveal-delay-3">
+          <a href="assets/raven-resume.pdf" target="_blank" rel="noopener" class="btn-resume">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="12" y1="18" x2="12" y2="12" />
+              <polyline points="9 15 12 18 15 15" />
+            </svg>
+            View My Resume
+          </a>
+          <p class="resume-hint">Opens as PDF in a new tab</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-inner">
+      <p>© 2025 <span>Raven San Juan</span> — All rights reserved.</p>
+      <p>Designed & Built with <span>♥</span> by Raven</p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    /* Page Loader */
+    window.addEventListener('load', () => {
+      setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1600);
+    });
+
+    /* Custom Cursor */
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      cursor.style.left = mouseX + 'px';
+      cursor.style.top = mouseY + 'px';
+    });
+    (function animRing() {
+      ringX += (mouseX - ringX) * 0.12;
+      ringY += (mouseY - ringY) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top = ringY + 'px';
+      requestAnimationFrame(animRing);
+    })();
+    document.querySelectorAll('a, button, .project-card, .skill-card, .canva-card, .video-card, .contact-card').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); ring.classList.add('hover'); });
+      el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
+    });
+
+    /* Nav Scroll */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+    /* Hamburger */
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+      document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+    });
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+
+    /* Scroll Reveal */
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+    /* Skill Bars */
+    const barObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.style.width = e.target.dataset.width + '%'; barObs.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.skill-bar').forEach(b => barObs.observe(b));
+
+    /* Project Tabs */
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    /* Active nav highlight */
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-links a');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(sec => { if (window.scrollY >= sec.offsetTop - 120) current = sec.id; });
+      navLinks.forEach(a => { a.style.color = a.getAttribute('href') === '#' + current ? 'var(--ink)' : ''; });
+    });
+  </script>
+</body>
+
+</html>
