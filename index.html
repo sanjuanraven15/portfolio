@@ -940,6 +940,7 @@
       background: rgba(26, 23, 20, 0.6);
       display: flex;
       align-items: flex-end;
+      gap: 12px;
       padding: 20px;
       opacity: 0;
       transition: opacity 0.35s;
@@ -958,6 +959,17 @@
       background: rgba(26, 23, 20, 0.7);
       padding: 6px 12px;
       backdrop-filter: blur(4px);
+    }
+
+    .canva-preview-hint {
+      margin-left: auto;
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ivory);
+      padding: 6px 0;
+      white-space: nowrap;
     }
 
     .canva-info {
@@ -1437,6 +1449,1038 @@
         width: 100%;
       }
     }
+
+    /* ============================================================
+       EFFECTS & ANIMATIONS
+    ============================================================ */
+
+    /* Loader — curtain lift + letter rise */
+    #loader {
+      transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1), visibility 1s;
+    }
+
+    #loader.hidden {
+      opacity: 1;
+      transform: translateY(-100%);
+    }
+
+    .loader-name .char {
+      animation: charUp 0.9s var(--ease-out) both;
+      animation-delay: calc(var(--i) * 45ms);
+    }
+
+    @keyframes charUp {
+      from {
+        opacity: 0;
+        transform: translateY(60%) rotate(8deg);
+        filter: blur(6px);
+      }
+    }
+
+    /* Split text */
+    .word {
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .char {
+      display: inline-block;
+    }
+
+    .split .char {
+      opacity: 0;
+      transform: translateY(70%) rotate(6deg);
+      filter: blur(8px);
+      transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out), filter 0.9s var(--ease-out);
+      transition-delay: calc(var(--i) * 40ms + 0.35s);
+    }
+
+    body.loaded .split .char {
+      opacity: 1;
+      transform: none;
+      filter: none;
+    }
+
+    /* Hold hero content until loader lifts */
+    body:not(.loaded) #home .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    /* Scroll progress bar */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, var(--gold), var(--blush));
+      transform: scaleX(0);
+      transform-origin: left;
+      z-index: 1001;
+      pointer-events: none;
+    }
+
+    /* Nav — slide in on load, hide on scroll down */
+    nav {
+      transition: padding 0.4s var(--ease-out), background 0.4s, transform 0.7s var(--ease-out), opacity 0.7s;
+    }
+
+    body:not(.loaded) nav,
+    nav.hide {
+      transform: translateY(-100%);
+    }
+
+    body:not(.loaded) nav {
+      opacity: 0;
+    }
+
+    .nav-links li {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+      transition-delay: calc(var(--i, 0) * 80ms + 0.4s);
+    }
+
+    body.loaded .nav-links li {
+      opacity: 1;
+      transform: none;
+    }
+
+    .nav-logo span {
+      display: inline-block;
+      transition: transform 0.4s var(--ease-out);
+    }
+
+    .nav-logo:hover span {
+      transform: translateY(-5px) scale(1.5);
+    }
+
+    .mobile-menu a {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out), color 0.3s;
+    }
+
+    .mobile-menu.open a {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(var(--i, 0) * 70ms + 0.1s);
+    }
+
+    .mobile-menu a:hover {
+      color: var(--gold);
+    }
+
+    /* Cursor — label mode + click squeeze */
+    .cursor-ring {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cursor-ring::after {
+      content: attr(data-label);
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .cursor-ring.label {
+      width: 78px;
+      height: 78px;
+      background: var(--gold);
+      border-color: var(--gold);
+      opacity: 0.92;
+    }
+
+    .cursor-ring.label::after {
+      opacity: 1;
+    }
+
+    .cursor.label-active {
+      opacity: 0;
+    }
+
+    .cursor.click {
+      width: 6px;
+      height: 6px;
+    }
+
+    @media (hover: none) {
+
+      .cursor,
+      .cursor-ring {
+        display: none;
+      }
+    }
+
+    /* Hero decor */
+    #home {
+      position: relative;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      will-change: transform, opacity;
+    }
+
+    .hero-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      transition: transform 1.2s var(--ease-out);
+    }
+
+    .hero-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+    }
+
+    .hero-blob.b1 {
+      width: 440px;
+      height: 440px;
+      background: var(--blush);
+      top: -120px;
+      right: 8%;
+      opacity: 0.35;
+      animation: blobDrift 18s ease-in-out infinite alternate;
+    }
+
+    .hero-blob.b2 {
+      width: 380px;
+      height: 380px;
+      background: var(--sage);
+      bottom: -140px;
+      left: -80px;
+      opacity: 0.22;
+      animation: blobDrift 22s ease-in-out infinite alternate-reverse;
+    }
+
+    .hero-blob.b3 {
+      width: 260px;
+      height: 260px;
+      background: var(--gold);
+      top: 42%;
+      left: 42%;
+      opacity: 0.16;
+      animation: blobDrift 15s ease-in-out infinite alternate;
+    }
+
+    @keyframes blobDrift {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(60px, -40px) scale(1.12);
+      }
+
+      100% {
+        transform: translate(-40px, 30px) scale(0.92);
+      }
+    }
+
+    .hero-shape {
+      position: absolute;
+      opacity: 0;
+      transition: opacity 1.2s ease 1.2s;
+    }
+
+    body.loaded .hero-shape {
+      opacity: 1;
+    }
+
+    .hero-shape>* {
+      display: block;
+      animation: floatY 7s ease-in-out infinite;
+    }
+
+    .shape-ring>* {
+      width: 72px;
+      height: 72px;
+      border: 1px solid rgba(184, 150, 90, 0.45);
+      border-radius: 50%;
+    }
+
+    .shape-diamond>* {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(61, 56, 48, 0.35);
+      animation: floatSpin 9s ease-in-out infinite;
+    }
+
+    .shape-plus>* {
+      font-family: var(--ff-mono);
+      font-size: 1.4rem;
+      color: var(--gold);
+      line-height: 1;
+      animation-duration: 6s;
+      animation-delay: -2s;
+    }
+
+    .shape-dot>* {
+      width: 10px;
+      height: 10px;
+      background: var(--blush);
+      border-radius: 50%;
+      animation-duration: 5s;
+      animation-delay: -1s;
+    }
+
+    .shape-grid>* {
+      width: 110px;
+      height: 110px;
+      background-image: radial-gradient(rgba(26, 23, 20, 0.22) 1px, transparent 1.5px);
+      background-size: 14px 14px;
+      animation-duration: 11s;
+    }
+
+    @keyframes floatY {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-16px);
+      }
+    }
+
+    @keyframes floatSpin {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(45deg);
+      }
+
+      50% {
+        transform: translateY(-14px) rotate(225deg);
+      }
+    }
+
+    .hero-visual {
+      transition: transform 1s var(--ease-out);
+    }
+
+    .hero-photo {
+      clip-path: inset(100% 0 0 0);
+      transition: filter 0.5s, clip-path 1.5s cubic-bezier(0.76, 0, 0.24, 1) 0.5s;
+    }
+
+    body.loaded .hero-photo {
+      clip-path: inset(0 0 0 0);
+    }
+
+    .hero-img-wrap::before {
+      clip-path: inset(0 100% 0 0);
+      transition: transform 0.5s var(--ease-out), clip-path 1.4s var(--ease-out) 1.3s;
+    }
+
+    body.loaded .hero-img-wrap::before {
+      clip-path: inset(0 0 0 0);
+    }
+
+    .hero-index {
+      animation: floatY 6s ease-in-out infinite;
+    }
+
+    /* Buttons */
+    .btn-primary,
+    .btn-outline,
+    .btn-resume {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -75%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      transform: skewX(-20deg);
+      z-index: -1;
+    }
+
+    .btn-primary:hover::before {
+      animation: shine 0.9s var(--ease-out);
+    }
+
+    @keyframes shine {
+      to {
+        left: 130%;
+      }
+    }
+
+    .btn-primary svg {
+      transition: transform 0.4s var(--ease-out);
+    }
+
+    .btn-primary:hover svg {
+      transform: translateX(5px);
+    }
+
+    .btn-outline::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 0.5s var(--ease-out);
+      z-index: -1;
+    }
+
+    .btn-outline:hover::before {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .btn-outline:hover {
+      color: var(--ivory);
+    }
+
+    .btn-resume svg {
+      transition: transform 0.4s var(--ease-out);
+    }
+
+    .btn-resume:hover svg {
+      animation: bob 0.8s ease-in-out infinite;
+    }
+
+    @keyframes bob {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(3px);
+      }
+    }
+
+    /* Marquee */
+    .marquee {
+      background: var(--ink);
+      color: var(--ivory);
+      padding: 22px 0;
+      overflow: hidden;
+      position: relative;
+      z-index: 2;
+    }
+
+    .marquee-track {
+      display: flex;
+      align-items: center;
+      width: max-content;
+      animation: marquee 38s linear infinite;
+    }
+
+    .marquee:hover .marquee-track {
+      animation-play-state: paused;
+    }
+
+    .marquee span {
+      font-family: var(--ff-serif);
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-style: italic;
+      font-weight: 300;
+      padding: 0 28px;
+      white-space: nowrap;
+      transition: color 0.3s;
+    }
+
+    .marquee span:nth-of-type(even) {
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(245, 242, 237, 0.55);
+    }
+
+    .marquee span:hover {
+      color: var(--gold);
+      -webkit-text-stroke: 0;
+    }
+
+    .marquee i {
+      color: var(--gold);
+      font-style: normal;
+      font-size: 0.9rem;
+      display: inline-block;
+      animation: spin 6s linear infinite;
+    }
+
+    @keyframes marquee {
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Section header line draw */
+    .section-header::after {
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1.4s var(--ease-out) 0.3s;
+    }
+
+    .section-header.visible::after {
+      transform: scaleX(1);
+    }
+
+    /* About */
+    .about-number {
+      background: linear-gradient(to bottom, rgba(184, 150, 90, 0.45) var(--fill, 0%), var(--ivory-dark) var(--fill, 0%));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .about-philosophy {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-philosophy::before {
+      content: '\201C';
+      position: absolute;
+      top: -30px;
+      right: 16px;
+      font-family: var(--ff-serif);
+      font-size: 9rem;
+      line-height: 1;
+      color: var(--gold);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1s var(--ease-out) 0.6s, transform 1s var(--ease-out) 0.6s;
+    }
+
+    .about-philosophy.visible::before {
+      opacity: 0.15;
+      transform: none;
+    }
+
+    .goals-list li {
+      opacity: 0;
+      transform: translateX(-16px);
+      transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+      transition-delay: calc(var(--i, 0) * 110ms + 0.6s);
+    }
+
+    .about-goals.visible .goals-list li {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Spotlight cards */
+    .skill-card::after,
+    .contact-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(184, 150, 90, 0.13), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    .contact-card::after {
+      background: radial-gradient(300px circle at var(--mx, 50%) var(--my, 50%), rgba(184, 150, 90, 0.16), transparent 60%);
+    }
+
+    .skill-card:hover::after,
+    .contact-card:hover::after {
+      opacity: 1;
+    }
+
+    .skill-icon {
+      width: fit-content;
+      transition: transform 0.6s var(--ease-out);
+    }
+
+    .skill-card:hover .skill-icon {
+      transform: translateY(-4px) rotate(-10deg) scale(1.2);
+    }
+
+    .skill-pct {
+      position: absolute;
+      top: 36px;
+      right: 32px;
+      font-family: var(--ff-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      color: var(--dust);
+    }
+
+    .skill-bar {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-bar::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      width: 40%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+      transform: translateX(-100%);
+      animation: barShine 3s ease-in-out 1.4s infinite;
+    }
+
+    @keyframes barShine {
+      60%,
+      100% {
+        transform: translateX(260%);
+      }
+    }
+
+    /* Project & canva cards */
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.35), transparent 55%);
+      mix-blend-mode: soft-light;
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: 3;
+    }
+
+    .project-card:hover .card-glare,
+    .canva-card:hover .card-glare {
+      opacity: 1;
+    }
+
+    .project-thumb {
+      background-size: 200% 200%;
+      animation: gradientShift 10s ease infinite;
+    }
+
+    @keyframes gradientShift {
+
+      0%,
+      100% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+    }
+
+    .project-thumb-placeholder {
+      transition: transform 0.7s var(--ease-out);
+    }
+
+    .project-card:hover .project-thumb-placeholder {
+      transform: scale(1.3) rotate(-8deg);
+    }
+
+    .overlay-btn {
+      transform: translateY(14px);
+      transition: background 0.3s, transform 0.45s var(--ease-out);
+    }
+
+    .project-card:hover .overlay-btn {
+      transform: none;
+    }
+
+    .tag {
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .project-card:hover .tag {
+      border-color: rgba(184, 150, 90, 0.5);
+      color: var(--gold);
+    }
+
+    .canva-card {
+      cursor: none;
+    }
+
+    .canva-thumb img {
+      clip-path: inset(0 0 100% 0);
+      transition: transform 0.6s var(--ease-out), clip-path 1.2s cubic-bezier(0.76, 0, 0.24, 1) 0.2s;
+    }
+
+    .canva-card.visible .canva-thumb img {
+      clip-path: inset(0 0 0 0);
+    }
+
+    .canva-overlay-tag {
+      transform: translateY(14px);
+      transition: transform 0.45s var(--ease-out);
+    }
+
+    .canva-card:hover .canva-overlay-tag {
+      transform: none;
+    }
+
+    .tab-panel.active {
+      animation: panelIn 0.6s var(--ease-out);
+    }
+
+    @keyframes panelIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+    }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 9990;
+      background: rgba(15, 13, 11, 0.92);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 80px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s var(--ease-out), visibility 0.5s;
+    }
+
+    .lightbox.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .lightbox figure {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      transform: scale(0.92) translateY(20px);
+      transition: transform 0.6s var(--ease-out);
+    }
+
+    .lightbox.open figure {
+      transform: none;
+    }
+
+    .lightbox img {
+      max-height: 68vh;
+      max-width: 100%;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .lightbox img.swap {
+      animation: lbSwap 0.5s var(--ease-out);
+    }
+
+    @keyframes lbSwap {
+      from {
+        opacity: 0;
+        transform: scale(0.96);
+      }
+    }
+
+    .lightbox figcaption {
+      font-family: var(--ff-serif);
+      font-size: 1.2rem;
+      color: var(--ivory);
+      text-align: center;
+    }
+
+    .lightbox figcaption small {
+      display: block;
+      font-family: var(--ff-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .lb-canva {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--ff-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 12px 22px;
+      text-decoration: none;
+      cursor: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .lb-canva:hover,
+    .lb-canva:focus-visible {
+      background: transparent;
+      color: var(--gold);
+    }
+
+    .lb-canva span {
+      transition: transform 0.3s var(--ease-out);
+    }
+
+    .lb-canva:hover span {
+      transform: translate(3px, -3px);
+    }
+
+    .lb-btn {
+      position: absolute;
+      background: none;
+      border: 1px solid rgba(245, 242, 237, 0.2);
+      color: var(--ivory);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: none;
+      transition: border-color 0.3s, background 0.3s, color 0.3s;
+    }
+
+    .lb-btn:hover {
+      border-color: var(--gold);
+      background: var(--gold);
+      color: var(--ink);
+    }
+
+    .lb-close {
+      top: 24px;
+      right: 24px;
+    }
+
+    .lb-prev {
+      left: 20px;
+      top: 50%;
+      margin-top: -24px;
+    }
+
+    .lb-next {
+      right: 20px;
+      top: 50%;
+      margin-top: -24px;
+    }
+
+    /* Contact */
+    #contact {
+      position: relative;
+      overflow: hidden;
+    }
+
+    #contact .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .particles span {
+      position: absolute;
+      bottom: -10px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0;
+      animation: rise linear infinite;
+    }
+
+    @keyframes rise {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0);
+      }
+
+      15% {
+        opacity: var(--o, 0.5);
+      }
+
+      85% {
+        opacity: var(--o, 0.5);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx, 20px), -110vh);
+      }
+    }
+
+    .contact-centered h2 em {
+      background: linear-gradient(90deg, var(--gold) 0%, #EAD7AE 45%, var(--gold) 55%, var(--gold) 100%);
+      background-size: 220% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 4.5s linear infinite;
+      padding-right: 0.08em;
+    }
+
+    @keyframes shimmer {
+      from {
+        background-position: 120% center;
+      }
+
+      to {
+        background-position: -120% center;
+      }
+    }
+
+    .contact-card-icon {
+      transition: transform 0.6s var(--ease-out), border-color 0.4s, background 0.4s;
+    }
+
+    .contact-card:hover .contact-card-icon {
+      transform: translateY(-4px) rotate(12deg) scale(1.1);
+      border-color: var(--gold);
+      background: rgba(184, 150, 90, 0.12);
+    }
+
+    /* Back to top */
+    .to-top {
+      position: fixed;
+      right: 28px;
+      bottom: 28px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: none;
+      background: var(--ivory);
+      color: var(--ink);
+      box-shadow: 0 10px 30px rgba(26, 23, 20, 0.12);
+      z-index: 850;
+      cursor: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px) scale(0.8);
+      transition: opacity 0.4s, transform 0.4s var(--ease-out), background 0.3s;
+    }
+
+    .to-top.show {
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+    }
+
+    .to-top:hover {
+      background: var(--gold);
+    }
+
+    .to-top svg {
+      position: absolute;
+      inset: 0;
+      transform: rotate(-90deg);
+    }
+
+    .to-top circle {
+      fill: none;
+      stroke-width: 1.5;
+    }
+
+    .to-top .track {
+      stroke: rgba(26, 23, 20, 0.08);
+    }
+
+    .to-top .progress {
+      stroke: var(--gold);
+      stroke-dasharray: 150.8;
+      stroke-dashoffset: 150.8;
+    }
+
+    .to-top:hover .progress {
+      stroke: var(--ink);
+    }
+
+    .to-top-arrow {
+      font-family: var(--ff-mono);
+      font-size: 1rem;
+      transition: transform 0.4s var(--ease-out);
+    }
+
+    .to-top:hover .to-top-arrow {
+      transform: translateY(-3px);
+    }
+
+    /* Footer */
+    .heart {
+      display: inline-block;
+      animation: heartbeat 1.6s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+
+      0%,
+      40%,
+      100% {
+        transform: scale(1);
+      }
+
+      20% {
+        transform: scale(1.3);
+      }
+
+      30% {
+        transform: scale(0.95);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .lightbox {
+        padding: 70px 16px;
+      }
+
+      .lb-prev,
+      .lb-next {
+        top: auto;
+        bottom: 20px;
+        margin-top: 0;
+      }
+
+      .to-top {
+        right: 16px;
+        bottom: 16px;
+      }
+
+      .shape-grid,
+      .shape-ring {
+        display: none;
+      }
+    }
+
+    /* Respect reduced-motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
 
@@ -1453,6 +2497,9 @@
   <!-- Custom Cursor -->
   <div class="cursor" id="cursor"></div>
   <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Scroll progress -->
+  <div class="scroll-progress" id="scrollProgress"></div>
 
   <!-- NAV -->
   <nav id="nav">
@@ -1483,25 +2530,39 @@
        HERO
   ============================================================ -->
   <section id="home">
-    <div class="hero-inner">
+    <!-- Ambient decor (parallax layers) -->
+    <div class="hero-layer" data-depth="18" aria-hidden="true">
+      <div class="hero-blob b1"></div>
+      <div class="hero-blob b2"></div>
+      <div class="hero-blob b3"></div>
+    </div>
+    <div class="hero-layer" data-depth="42" aria-hidden="true">
+      <div class="hero-shape shape-ring" style="top:16%;left:44%;"><i></i></div>
+      <div class="hero-shape shape-diamond" style="bottom:18%;left:6%;"><i></i></div>
+      <div class="hero-shape shape-plus" style="top:22%;right:5%;"><i>+</i></div>
+      <div class="hero-shape shape-dot" style="bottom:30%;left:48%;"><i></i></div>
+      <div class="hero-shape shape-grid" style="bottom:8%;right:3%;"><i></i></div>
+    </div>
+
+    <div class="hero-inner" id="heroInner">
       <div class="hero-text" style="position:relative;">
         <div class="hero-eyebrow reveal">
           <span class="label">Portfolio 2025</span>
         </div>
-        <h1 class="display hero-name reveal reveal-delay-1">
+        <h1 class="display hero-name split">
           Hello, I'm<br><em>Raven.</em>
         </h1>
         <p class="hero-tagline reveal reveal-delay-2">
           Designing minimal, elegant experiences — on screen, on canvas, and in motion.
         </p>
         <div class="hero-cta reveal reveal-delay-3">
-          <a href="#projects" class="btn-primary">
+          <a href="#projects" class="btn-primary magnetic">
             View My Work
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
             </svg>
           </a>
-          <a href="#contact" class="btn-outline">Get In Touch</a>
+          <a href="#contact" class="btn-outline magnetic">Get In Touch</a>
         </div>
         <div class="scroll-hint reveal reveal-delay-4">
           <div class="scroll-line"></div>
@@ -1509,17 +2570,25 @@
         </div>
       </div>
 
-      <div class="hero-visual">
+      <div class="hero-visual" data-depth="-14">
         <div class="hero-img-wrap reveal reveal-delay-2">
           <img src="assets/raven-photo.png" alt="Raven San Juan" class="hero-photo" />
           <div class="hero-index">
-            <span class="num">2+</span>
+            <span class="num" data-count="2" data-suffix="+">2+</span>
             <span class="txt">Years Experience</span>
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Web Development</span><i>✦</i><span>Visual Design</span><i>✦</i><span>Laravel &amp; PHP</span><i>✦</i><span>Canva Graphics</span><i>✦</i><span>C# / .NET</span><i>✦</i><span>UI Craft</span><i>✦</i>
+      <span>Web Development</span><i>✦</i><span>Visual Design</span><i>✦</i><span>Laravel &amp; PHP</span><i>✦</i><span>Canva Graphics</span><i>✦</i><span>C# / .NET</span><i>✦</i><span>UI Craft</span><i>✦</i>
+    </div>
+  </div>
 
   <!-- ============================================================
        ABOUT
@@ -1884,101 +2953,94 @@
       <!-- CANVA DESIGNS -->
       <div class="tab-panel" id="tab-canva">
         <div class="canva-grid">
-          <div class="canva-card reveal">
+          <div class="canva-card reveal" data-full="assets/design-pets.png" data-canva="https://canva.link/wqnzryhr6lig6sw">
             <div class="canva-thumb">
-              <img src="assets/canva-1-courage.png" alt="Embracing Courage & Perseverance poster" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Motivational Poster</span></div>
+              <img src="assets/thumbs/design-pets.jpg" alt="Love. Care. Protect. pet awareness campaign poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Awareness Campaign</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Courage & Perseverance</h3>
-              <p>A motivational poster combining bold typography, diamond shapes, and an inspiring Winston Churchill
-                quote.</p>
+              <h3>Pet Awareness Campaign</h3>
+              <p>A warm, gentle campaign poster with soft pastels, paw-print accents, and simple pet-care reminders.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-1">
+          <div class="canva-card reveal reveal-delay-1" data-full="assets/design-energy.png" data-canva="https://canva.link/a40chw8xeta768p">
             <div class="canva-thumb">
-              <img src="assets/canva-2-corporate.png" alt="Corporate Design 2024 cover" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Corporate Brochure</span></div>
+              <img src="assets/thumbs/design-energy.jpg" alt="Power Your Moment energy drink Instagram ad" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Instagram Ad</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Corporate Design Cover</h3>
-              <p>A clean 2024 corporate brochure cover with diamond photo frames and a professional blue palette.</p>
+              <h3>Energy Drink Instagram Ad</h3>
+              <p>A high-voltage social ad with neon lightning, a red-and-blue split, and a bold call-to-action.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-2">
+          <div class="canva-card reveal reveal-delay-2" data-full="assets/design-sale.png" data-canva="https://canva.link/rq6d58jxg1vioy5">
             <div class="canva-thumb">
-              <img src="assets/canva-3-beyond.png" alt="Beyond Boundaries company profile" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Company Profile</span></div>
+              <img src="assets/thumbs/design-sale.jpg" alt="BK Super Sale menswear promotional poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Promo Poster</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Beyond Boundaries</h3>
-              <p>A bold teal and dark gray company profile cover featuring a cityscape and strong editorial layout.</p>
+              <h3>Super Sale Poster</h3>
+              <p>A striking navy and orange menswear sale poster with 3D headline type and angled accent bars.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-1">
+          <div class="canva-card reveal reveal-delay-1" data-full="assets/design-corporate.png" data-canva="https://canva.link/d2wwu8p0x8nnay4">
             <div class="canva-thumb">
-              <img src="assets/canva-4-contractor.png" alt="Contractor construction flyer" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Business Flyer</span></div>
+              <img src="assets/thumbs/design-corporate.jpg" alt="Beyond Boundaries 2024 corporate report cover" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Corporate Report</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Construction Partner Flyer</h3>
-              <p>A warm brown-toned flyer for a construction company with vintage photo and strong call-to-action
-                typography.</p>
+              <h3>2024 Corporate Report Cover</h3>
+              <p>A sharp teal and charcoal report cover with angled skyscraper photography and an editorial layout.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-2">
+          <div class="canva-card reveal reveal-delay-2" data-full="assets/design-boba.png" data-canva="https://canva.link/1zj9r9d1grzkcm5">
             <div class="canva-thumb">
-              <img src="assets/canva-5-productivity.png" alt="Boost your productivity infographic" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Infographic</span></div>
+              <img src="assets/thumbs/design-boba.jpg" alt="Coffee Boba Brown Sugar Brulee product poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Product Poster</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Productivity Strategies</h3>
-              <p>A structured navy and gold infographic with strategies for time-blocking, task prioritization, and
-                focused work.</p>
+              <h3>Coffee Boba Poster</h3>
+              <p>A glowing F&amp;B product poster with floating boba pearls, coffee beans, and oversized type on amber.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-3">
+          <div class="canva-card reveal reveal-delay-3" data-full="assets/design-laborday.png" data-canva="https://canva.link/4sy15c9z0l9in42">
             <div class="canva-thumb">
-              <img src="assets/canva-6-laborday.png" alt="Happy Labor Day greeting card" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Holiday Greeting</span></div>
+              <img src="assets/thumbs/design-laborday.jpg" alt="Happy Labor Day construction poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Holiday Poster</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Happy Labor Day</h3>
-              <p>A clean architectural-themed Labor Day greeting card with layered glass, construction imagery, and
-                caution-tape accents.</p>
+              <h3>Labor Day Construction Poster</h3>
+              <p>An architectural Labor Day greeting with a sunset skyline, glass towers, and caution-tape accents.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-1">
+          <div class="canva-card reveal reveal-delay-1" data-full="assets/design-productivity.png" data-canva="https://canva.link/punuzz4osiqkgkn">
             <div class="canva-thumb">
-              <img src="assets/canva-7-boba.png" alt="Coffee Boba Brown Sugar product poster" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Product Poster</span></div>
+              <img src="assets/thumbs/design-productivity.jpg" alt="Boost your productivity tips flyer" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Infographic Flyer</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Coffee Boba Product Launch</h3>
-              <p>A dynamic F&B product poster with floating boba pearls, coffee beans, and bold oversized type on amber.
-              </p>
+              <h3>Productivity Tips Flyer</h3>
+              <p>A structured navy and gold flyer outlining five strategies, from time-blocking to clear goal setting.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-2">
+          <div class="canva-card reveal reveal-delay-2" data-full="assets/design-courage.png" data-canva="https://canva.link/09ba0ued86orszk">
             <div class="canva-thumb">
-              <img src="assets/canva-8-menu.png" alt="Special Menu restaurant flyer" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Restaurant Flyer</span></div>
+              <img src="assets/thumbs/design-courage.jpg" alt="Embracing Courage & Perseverance motivational poster" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Motivational Poster</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Special Menu Flyer</h3>
-              <p>An energetic food menu flyer for chicken skewers with brush strokes, orange splashes, and bold
-                lettering.</p>
+              <h3>Courage &amp; Perseverance</h3>
+              <p>A motivational poster pairing diamond photo frames and warm gold light with a Winston Churchill quote.</p>
             </div>
           </div>
-          <div class="canva-card reveal reveal-delay-3">
+          <div class="canva-card reveal reveal-delay-3" data-full="assets/design-construction.png" data-canva="https://canva.link/larqe3eto03ss3l">
             <div class="canva-thumb">
-              <img src="assets/canva-9-sale.png" alt="BK Super Sale promotional poster" loading="lazy" />
-              <div class="canva-overlay"><span class="canva-overlay-tag">Promo Poster</span></div>
+              <img src="assets/thumbs/design-construction.jpg" alt="Rising Together construction company flyer" loading="lazy" />
+              <div class="canva-overlay"><span class="canva-overlay-tag">Business Flyer</span><span class="canva-preview-hint">Click to preview</span></div>
             </div>
             <div class="canva-info">
-              <h3>Super Sale Promo Poster</h3>
-              <p>A striking navy and orange fashion sale poster with geometric shapes, bold headlines, and product
-                photography.</p>
+              <h3>Construction Company Flyer</h3>
+              <p>A premium black and gold flyer for a high-rise contractor with framed site photography.</p>
             </div>
           </div>
         </div>
@@ -1991,6 +3053,7 @@
        CONTACT — info cards only
   ============================================================ -->
   <section id="contact">
+    <div class="particles" id="particles" aria-hidden="true"></div>
     <div class="container">
       <div class="section-header reveal">
         <span class="label">04 — Let's Connect</span>
@@ -2025,7 +3088,7 @@
 
         <!-- Resume -->
         <div class="resume-row reveal reveal-delay-3">
-          <a href="assets/raven-resume.pdf" target="_blank" rel="noopener" class="btn-resume">
+          <a href="assets/raven-resume.pdf" target="_blank" rel="noopener" class="btn-resume magnetic">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
               stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -2046,16 +3109,100 @@
   <footer>
     <div class="container footer-inner">
       <p>© 2025 <span>Raven San Juan</span> — All rights reserved.</p>
-      <p>Designed & Built with <span>♥</span> by Raven</p>
+      <p>Designed & Built with <span class="heart">♥</span> by Raven</p>
     </div>
   </footer>
 
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Design preview">
+    <button class="lb-btn lb-close" id="lbClose" aria-label="Close">✕</button>
+    <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous">←</button>
+    <button class="lb-btn lb-next" id="lbNext" aria-label="Next">→</button>
+    <figure>
+      <img id="lbImg" src="" alt="" />
+      <figcaption id="lbCap"></figcaption>
+      <a class="lb-canva" id="lbLink" href="#" target="_blank" rel="noopener">View in Canva <span aria-hidden="true">↗</span></a>
+    </figure>
+  </div>
+
+  <!-- Back to top -->
+  <button class="to-top magnetic" id="toTop" aria-label="Back to top">
+    <svg viewBox="0 0 52 52" aria-hidden="true">
+      <circle class="track" cx="26" cy="26" r="24" />
+      <circle class="progress" id="toTopRing" cx="26" cy="26" r="24" />
+    </svg>
+    <span class="to-top-arrow">↑</span>
+  </button>
+
   <!-- JAVASCRIPT -->
   <script>
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    /* Split text into per-character spans (keeps <em>/<br>, words stay unbroken) */
+    function splitChars(el) {
+      let i = 0;
+      el.setAttribute('aria-label', (el.innerText || el.textContent).replace(/\s+/g, ' ').trim());
+      const walk = node => {
+        [...node.childNodes].forEach(child => {
+          if (child.nodeType === 3) {
+            const frag = document.createDocumentFragment();
+            child.textContent.split(/(\s+)/).forEach(part => {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+              const word = document.createElement('span');
+              word.className = 'word';
+              word.setAttribute('aria-hidden', 'true');
+              [...part].forEach(ch => {
+                const s = document.createElement('span');
+                s.className = 'char';
+                s.textContent = ch;
+                s.style.setProperty('--i', i++);
+                word.appendChild(s);
+              });
+              frag.appendChild(word);
+            });
+            child.replaceWith(frag);
+          } else if (child.nodeType === 1 && child.tagName !== 'BR') {
+            walk(child);
+          }
+        });
+      };
+      walk(el);
+    }
+    document.querySelectorAll('.split, .loader-name').forEach(splitChars);
+
+    /* Stagger indexes */
+    document.querySelectorAll('.nav-links li, .mobile-menu a, .goals-list li').forEach(el => {
+      el.style.setProperty('--i', [...el.parentElement.children].indexOf(el));
+    });
+
     /* Page Loader */
     window.addEventListener('load', () => {
-      setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1600);
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+        setTimeout(() => {
+          document.body.classList.add('loaded');
+          countUp(document.querySelector('.hero-index .num'), 1200);
+        }, 250);
+      }, 1600);
     });
+
+    /* Number counter */
+    function countUp(el, delay = 0) {
+      if (!el) return;
+      const target = +el.dataset.count, suffix = el.dataset.suffix || '';
+      if (reduceMotion) { el.textContent = target + suffix; return; }
+      el.textContent = '0' + suffix;
+      setTimeout(() => {
+        const start = performance.now(), dur = 1200;
+        (function tick(now) {
+          const p = Math.min((now - start) / dur, 1);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3))) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(start);
+      }, delay);
+    }
 
     /* Custom Cursor */
     const cursor = document.getElementById('cursor');
@@ -2077,6 +3224,14 @@
       el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); ring.classList.add('hover'); });
       el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
     });
+
+    /* Cursor label on canva cards + click squeeze */
+    document.querySelectorAll('.canva-card').forEach(el => {
+      el.addEventListener('mouseenter', () => { ring.dataset.label = 'Preview'; ring.classList.add('label'); cursor.classList.add('label-active'); });
+      el.addEventListener('mouseleave', () => { ring.classList.remove('label'); cursor.classList.remove('label-active'); });
+    });
+    document.addEventListener('mousedown', () => cursor.classList.add('click'));
+    document.addEventListener('mouseup', () => cursor.classList.remove('click'));
 
     /* Nav Scroll */
     const nav = document.getElementById('nav');
@@ -2104,21 +3259,211 @@
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-    /* Skill Bars */
+    /* Section label scramble */
+    const SCRAMBLE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#*+/<>';
+    function scramble(el) {
+      const final = el.textContent, start = performance.now(), dur = 900;
+      (function tick(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const done = Math.floor(p * final.length);
+        el.textContent = [...final].map((c, i) =>
+          i < done || c === ' ' ? c : SCRAMBLE[Math.floor(Math.random() * SCRAMBLE.length)]).join('');
+        if (p < 1) requestAnimationFrame(tick);
+      })(start);
+    }
+    if (!reduceMotion) {
+      const labelObs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { scramble(e.target); labelObs.unobserve(e.target); } });
+      }, { threshold: 1 });
+      document.querySelectorAll('.section-header .label').forEach(l => labelObs.observe(l));
+    }
+
+    /* Skill Bars + percentage counters */
+    document.querySelectorAll('.skill-card').forEach(card => {
+      const pct = document.createElement('span');
+      pct.className = 'skill-pct';
+      pct.textContent = '0%';
+      card.appendChild(pct);
+    });
     const barObs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.style.width = e.target.dataset.width + '%'; barObs.unobserve(e.target); } });
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const bar = e.target, pct = bar.closest('.skill-card').querySelector('.skill-pct');
+        bar.style.width = bar.dataset.width + '%';
+        pct.dataset.count = bar.dataset.width;
+        pct.dataset.suffix = '%';
+        countUp(pct);
+        barObs.unobserve(bar);
+      });
     }, { threshold: 0.5 });
     document.querySelectorAll('.skill-bar').forEach(b => barObs.observe(b));
 
-    /* Project Tabs */
+    /* Project Tabs (with staggered card entrance) */
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        const panel = document.getElementById('tab-' + btn.dataset.tab);
+        panel.classList.add('active');
+        panel.querySelectorAll('.reveal').forEach((card, i) => {
+          card.classList.remove('visible');
+          card.style.transitionDelay = (i * 70) + 'ms';
+          requestAnimationFrame(() => requestAnimationFrame(() => card.classList.add('visible')));
+          setTimeout(() => { card.style.transitionDelay = ''; }, 1400);
+        });
       });
     });
+
+    /* Spotlight following the mouse */
+    document.querySelectorAll('.skill-card, .contact-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+      });
+    });
+
+    if (finePointer && !reduceMotion) {
+      /* 3D tilt + glare on cards */
+      document.querySelectorAll('.project-card, .canva-card').forEach(card => {
+        const glare = document.createElement('span');
+        glare.className = 'card-glare';
+        card.appendChild(glare);
+        card.addEventListener('mousemove', e => {
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+          card.style.transition = 'transform 0.12s linear, box-shadow 0.4s, opacity 0.8s';
+          card.style.transform = `perspective(900px) rotateX(${(0.5 - y) * 8}deg) rotateY(${(x - 0.5) * 8}deg) translateY(-6px)`;
+          card.style.setProperty('--gx', x * 100 + '%');
+          card.style.setProperty('--gy', y * 100 + '%');
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transition = 'transform 0.7s var(--ease-out), box-shadow 0.4s, opacity 0.8s';
+          card.style.transform = '';
+        });
+      });
+
+      /* Magnetic buttons */
+      document.querySelectorAll('.magnetic').forEach(el => {
+        el.addEventListener('mousemove', e => {
+          const r = el.getBoundingClientRect();
+          const x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+          el.style.transform = `translate(${x * 0.25}px, ${y * 0.4}px)`;
+        });
+        el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+      });
+
+      /* Hero mouse parallax */
+      const depthEls = document.querySelectorAll('#home [data-depth]');
+      document.getElementById('home').addEventListener('mousemove', e => {
+        const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+        depthEls.forEach(el => {
+          const d = +el.dataset.depth;
+          el.style.transform = `translate(${x * d}px, ${y * d}px)`;
+        });
+      });
+    }
+
+    /* Contact particles */
+    const particles = document.getElementById('particles');
+    for (let i = 0; i < (reduceMotion ? 0 : 26); i++) {
+      const p = document.createElement('span');
+      const size = 1 + Math.random() * 3;
+      p.style.cssText = `left:${Math.random() * 100}%;width:${size}px;height:${size}px;` +
+        `animation-duration:${9 + Math.random() * 12}s;animation-delay:${-Math.random() * 20}s;` +
+        `--o:${0.2 + Math.random() * 0.5};--dx:${(Math.random() - 0.5) * 120}px;`;
+      particles.appendChild(p);
+    }
+
+    /* Canva lightbox */
+    const canvaCards = [...document.querySelectorAll('.canva-card')];
+    const lightbox = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lbImg');
+    const lbCap = document.getElementById('lbCap');
+    const lbLink = document.getElementById('lbLink');
+    let lbIndex = 0;
+    function showLb(i) {
+      lbIndex = (i + canvaCards.length) % canvaCards.length;
+      const card = canvaCards[lbIndex], img = card.querySelector('img');
+      lbImg.src = card.dataset.full || img.src;
+      lbImg.alt = img.alt;
+      lbLink.href = card.dataset.canva;
+      lbLink.setAttribute('aria-label', 'View ' + card.querySelector('h3').textContent + ' in Canva (opens in a new tab)');
+      const tag = document.createElement('small');
+      tag.textContent = card.querySelector('.canva-overlay-tag').textContent;
+      lbCap.replaceChildren(tag, card.querySelector('h3').textContent);
+      lbImg.classList.remove('swap');
+      void lbImg.offsetWidth;
+      lbImg.classList.add('swap');
+    }
+    function openLb(i) {
+      showLb(i);
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLb() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      ring.classList.remove('label', 'hover');
+      cursor.classList.remove('label-active', 'hover');
+    }
+    canvaCards.forEach((card, i) => {
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.addEventListener('click', () => openLb(i));
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(i); } });
+    });
+    document.getElementById('lbClose').addEventListener('click', closeLb);
+    document.getElementById('lbPrev').addEventListener('click', () => showLb(lbIndex - 1));
+    document.getElementById('lbNext').addEventListener('click', () => showLb(lbIndex + 1));
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLb(); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLb();
+      if (e.key === 'ArrowLeft') showLb(lbIndex - 1);
+      if (e.key === 'ArrowRight') showLb(lbIndex + 1);
+    });
+
+    /* Back to top */
+    const toTop = document.getElementById('toTop');
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+
+    /* Scroll-driven effects (progress bar, nav hide, hero parallax, about fill) */
+    const progressBar = document.getElementById('scrollProgress');
+    const toTopRing = document.getElementById('toTopRing');
+    const RING_LEN = 2 * Math.PI * 24;
+    const heroInner = document.getElementById('heroInner');
+    const aboutSection = document.getElementById('about');
+    const aboutNumber = document.querySelector('.about-number');
+    let lastY = scrollY, ticking = false;
+    function onScroll() {
+      const y = scrollY;
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const p = max > 0 ? y / max : 0;
+      progressBar.style.transform = `scaleX(${p})`;
+      toTopRing.style.strokeDashoffset = RING_LEN * (1 - p);
+      toTop.classList.toggle('show', y > innerHeight * 0.6);
+
+      if (!mobileMenu.classList.contains('open') && Math.abs(y - lastY) > 4) {
+        nav.classList.toggle('hide', y > lastY && y > 400);
+        lastY = y;
+      }
+
+      if (!reduceMotion && y < innerHeight) {
+        heroInner.style.transform = `translateY(${y * 0.18}px)`;
+        heroInner.style.opacity = Math.max(0, 1 - y / (innerHeight * 0.9));
+      }
+
+      const r = aboutSection.getBoundingClientRect();
+      const fill = Math.min(Math.max((innerHeight - r.top) / (r.height * 0.7), 0), 1);
+      aboutNumber.style.setProperty('--fill', (fill * 100).toFixed(1) + '%');
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+    }, { passive: true });
+    onScroll();
 
     /* Active nav highlight */
     const sections = document.querySelectorAll('section[id]');
